@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Description Generator - ContentAI Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="p-2 rounded-lg hover:bg-gray-100 lg:hidden">
+                        <i class="ri-arrow-left-line text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                            <i class="ri-robot-line text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">ContentAI Pro</h1>
+                            <p class="text-xs text-gray-500">Product Description Generator</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="hidden lg:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition">
+                        <i class="ri-arrow-left-line"></i>
+                        <span>Back to Dashboard</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="ri-user-line text-white"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">User</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-16 h-screen flex">
+        <!-- Chat Interface -->
+        <div class="flex-1 bg-white flex flex-col">
+            <!-- Chat Header -->
+            <div class="border-b border-gray-200 p-4 bg-white">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="ri-shopping-bag-line text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900">Product Description Generator</h2>
+                        <p class="text-sm text-gray-500">Generate compelling product descriptions that convert</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="flex-1 p-6 overflow-y-auto" id="chatContainer">
+                <div class="space-y-6" id="messagesContainer">
+                    <!-- Welcome Message -->
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="ri-robot-line text-white text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4 max-w-md">
+                            <p class="text-gray-800">வணக்கம்! Product description generate பண்ண ready-ஆ இருக்கேன். உங்க product details சொல்லுங்க - product name, key features, target audience, எல்லாம் சொன்னா அதற்கு best description create பண்ணுவேன்!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4 bg-white">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="messageInput" 
+                            placeholder="Product details-ஐ describe பண்ணுங்க (e.g., Wireless Bluetooth Headphones with noise cancellation)"
+                            class="w-full p-3 pr-20 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        >
+                        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                            <button class="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Upload Image">
+                                <i class="ri-image-line"></i>
+                            </button>
+                            <button class="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Voice Input">
+                                <i class="ri-mic-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button 
+                        id="sendBtn" 
+                        onclick="sendMessage()"
+                        class="p-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <i class="ri-send-plane-line"></i>
+                    </button>
+                </div>
+                
+                <!-- Quick Suggestions -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button onclick="quickSuggestion('Wireless earbuds with active noise cancellation')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Wireless Earbuds
+                    </button>
+                    <button onclick="quickSuggestion('Smartphone with 108MP camera and 5000mAh battery')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Smartphone
+                    </button>
+                    <button onclick="quickSuggestion('Gaming laptop with RTX graphics and RGB keyboard')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Gaming Laptop
+                    </button>
+                    <button onclick="quickSuggestion('Organic skincare cream with natural ingredients')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Skincare Product
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Sidebar -->
+        <div class="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Description Settings</h3>
+            
+            <div class="space-y-6">
+                <!-- Tone Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Writing Tone</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="tone" value="professional" class="text-primary" checked>
+                            <span class="ml-2 text-sm">Professional</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="tone" value="casual" class="text-primary">
+                            <span class="ml-2 text-sm">Casual & Friendly</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="tone" value="enthusiastic" class="text-primary">
+                            <span class="ml-2 text-sm">Enthusiastic</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="tone" value="luxury" class="text-primary">
+                            <span class="ml-2 text-sm">Luxury & Premium</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="tone" value="technical" class="text-primary">
+                            <span class="ml-2 text-sm">Technical & Detailed</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Content Length -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Content Length</label>
+                    <select id="contentLength" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="short">Short (50-100 words)</option>
+                        <option value="medium" selected>Medium (100-200 words)</option>
+                        <option value="long">Long (200-300 words)</option>
+                        <option value="detailed">Detailed (300+ words)</option>
+                    </select>
+                </div>
+                
+                <!-- Target Audience -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Target Audience</label>
+                    <select id="targetAudience" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="general">General Public</option>
+                        <option value="professionals">Business Professionals</option>
+                        <option value="tech">Tech Enthusiasts</option>
+                        <option value="young">Young Adults (18-30)</option>
+                        <option value="families">Families</option>
+                        <option value="seniors">Seniors (50+)</option>
+                    </select>
+                </div>
+
+                <!-- Product Category -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Product Category</label>
+                    <select id="productCategory" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion & Clothing</option>
+                        <option value="home">Home & Garden</option>
+                        <option value="beauty">Beauty & Personal Care</option>
+                        <option value="sports">Sports & Fitness</option>
+                        <option value="books">Books & Media</option>
+                        <option value="automotive">Automotive</option>
+                        <option value="food">Food & Beverages</option>
+                    </select>
+                </div>
+
+                <!-- Features to Include -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Include Elements</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeBenefits" class="text-primary" checked>
+                            <span class="ml-2 text-sm">Key Benefits</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeSpecs" class="text-primary" checked>
+                            <span class="ml-2 text-sm">Technical Specifications</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeUseCases" class="text-primary">
+                            <span class="ml-2 text-sm">Use Cases & Applications</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeWarranty" class="text-primary">
+                            <span class="ml-2 text-sm">Warranty & Support Info</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeCTA" class="text-primary" checked>
+                            <span class="ml-2 text-sm">Call-to-Action</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- SEO Options -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">SEO Optimization</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="seoKeywords" class="text-primary" checked>
+                            <span class="ml-2 text-sm">Include Keywords</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="seoMeta" class="text-primary">
+                            <span class="ml-2 text-sm">Meta Description</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-4 border-t border-gray-200 space-y-3">
+                    <button onclick="generateSample()" class="w-full p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium">
+                        <i class="ri-magic-line mr-2"></i>
+                        Generate Sample
+                    </button>
+                    <button onclick="resetSettings()" class="w-full p-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                        <i class="ri-refresh-line mr-2"></i>
+                        Reset Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <!-- In pages/product-generator.html, add this line before the existing scripts: -->
+<script src="../assets/js/utils/helpers.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/generators/product.js"></script>
+</body>
+</html>

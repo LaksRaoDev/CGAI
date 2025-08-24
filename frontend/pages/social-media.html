@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Generator - ContentAI Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        facebook: '#1877F2',
+                        instagram: '#E4405F',
+                        twitter: '#1DA1F2',
+                        linkedin: '#0A66C2',
+                        youtube: '#FF0000'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="p-2 rounded-lg hover:bg-gray-100 lg:hidden">
+                        <i class="ri-arrow-left-line text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                            <i class="ri-robot-line text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">ContentAI Pro</h1>
+                            <p class="text-xs text-gray-500">Social Media Generator</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button onclick="goBack()" class="hidden lg:flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition">
+                        <i class="ri-arrow-left-line"></i>
+                        <span>Back to Dashboard</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="ri-user-line text-white"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">User</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-16 h-screen flex">
+        <!-- Chat Interface -->
+        <div class="flex-1 bg-white flex flex-col">
+            <!-- Chat Header -->
+            <div class="border-b border-gray-200 p-4 bg-white">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+                        <i class="ri-smartphone-line text-secondary text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900">Social Media Post Generator</h2>
+                        <p class="text-sm text-gray-500">Create engaging posts for all major platforms</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="flex-1 p-6 overflow-y-auto" id="chatContainer">
+                <div class="space-y-6" id="messagesContainer">
+                    <!-- Welcome Message -->
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                            <i class="ri-robot-line text-white text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4 max-w-md">
+                            <p class="text-gray-800">வணக்கம்! Social media post create பண்ண ready-ஆ இருக்கேன். உங்க content idea, product, campaign details சொல்லுங்க. Platform select பண்ணி, tone set பண்ணினா perfect post generate பண்ணுவேன்!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4 bg-white">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="messageInput" 
+                            placeholder="Post idea-வ describe பண்ணுங்க (e.g., New product launch announcement, Weekend sale promotion)"
+                            class="w-full p-3 pr-20 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary"
+                        >
+                        <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                            <button class="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Add Hashtags">
+                                <i class="ri-hashtag"></i>
+                            </button>
+                            <button class="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Add Emojis">
+                                <i class="ri-emotion-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button 
+                        id="sendBtn" 
+                        onclick="sendMessage()"
+                        class="p-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <i class="ri-send-plane-line"></i>
+                    </button>
+                </div>
+                
+                <!-- Quick Suggestions -->
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button onclick="quickSuggestion('New product launch announcement for fitness tracker')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Product Launch
+                    </button>
+                    <button onclick="quickSuggestion('Weekend flash sale 50% off on electronics')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Sale Promotion
+                    </button>
+                    <button onclick="quickSuggestion('Customer testimonial and review showcase')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Testimonial
+                    </button>
+                    <button onclick="quickSuggestion('Behind the scenes company culture post')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition">
+                        Behind the Scenes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Sidebar -->
+        <div class="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Post Settings</h3>
+            
+            <div class="space-y-6">
+                <!-- Platform Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Platform</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectPlatform('facebook')" id="platform-facebook" class="platform-btn p-3 border-2 border-facebook bg-facebook/10 rounded-lg text-facebook text-xs font-medium flex flex-col items-center hover:bg-facebook/20 transition platform-selected">
+                            <i class="ri-facebook-fill text-lg mb-1"></i>
+                            Facebook
+                        </button>
+                        <button onclick="selectPlatform('instagram')" id="platform-instagram" class="platform-btn p-3 border border-gray-200 rounded-lg text-gray-700 text-xs font-medium hover:border-gray-300 flex flex-col items-center transition">
+                            <i class="ri-instagram-line text-lg mb-1"></i>
+                            Instagram
+                        </button>
+                        <button onclick="selectPlatform('twitter')" id="platform-twitter" class="platform-btn p-3 border border-gray-200 rounded-lg text-gray-700 text-xs font-medium hover:border-gray-300 flex flex-col items-center transition">
+                            <i class="ri-twitter-line text-lg mb-1"></i>
+                            Twitter
+                        </button>
+                        <button onclick="selectPlatform('linkedin')" id="platform-linkedin" class="platform-btn p-3 border border-gray-200 rounded-lg text-gray-700 text-xs font-medium hover:border-gray-300 flex flex-col items-center transition">
+                            <i class="ri-linkedin-fill text-lg mb-1"></i>
+                            LinkedIn
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Post Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Post Type</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="postType" value="promotional" class="text-secondary" checked>
+                            <span class="ml-2 text-sm">Promotional</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="postType" value="educational" class="text-secondary">
+                            <span class="ml-2 text-sm">Educational</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="postType" value="engagement" class="text-secondary">
+                            <span class="ml-2 text-sm">Engagement</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="postType" value="storytelling" class="text-secondary">
+                            <span class="ml-2 text-sm">Storytelling</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="postType" value="announcement" class="text-secondary">
+                            <span class="ml-2 text-sm">Announcement</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Tone</label>
+                    <select id="tone" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <option value="friendly">Friendly</option>
+                        <option value="professional">Professional</option>
+                        <option value="casual">Casual</option>
+                        <option value="enthusiastic">Enthusiastic</option>
+                        <option value="inspiring">Inspiring</option>
+                        <option value="humorous">Humorous</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                
+                <!-- Content Length -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Content Length</label>
+                    <select id="contentLength" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <option value="short">Short (1-2 sentences)</option>
+                        <option value="medium" selected>Medium (3-5 sentences)</option>
+                        <option value="long">Long (6+ sentences)</option>
+                    </select>
+                </div>
+
+                <!-- Hashtags -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Hashtags</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="autoHashtags" class="text-secondary" checked>
+                            <span class="ml-2 text-sm">Auto-generate hashtags</span>
+                        </label>
+                        <input type="text" id="customHashtags" placeholder="Custom hashtags (comma separated)" class="w-full p-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>Hashtag Count:</span>
+                            <select id="hashtagCount" class="text-xs border border-gray-200 rounded px-2 py-1">
+                                <option value="3">3</option>
+                                <option value="5" selected>5</option>
+                                <option value="8">8</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Include Elements -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Include Elements</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeCTA" class="text-secondary" checked>
+                            <span class="ml-2 text-sm">Call-to-action</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeQuestion" class="text-secondary">
+                            <span class="ml-2 text-sm">Engagement question</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeEmojis" class="text-secondary" checked>
+                            <span class="ml-2 text-sm">Emojis</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeMentions" class="text-secondary">
+                            <span class="ml-2 text-sm">User mentions</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Target Audience -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Target Audience</label>
+                    <select id="targetAudience" class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20">
+                        <option value="general">General Audience</option>
+                        <option value="young">Young Adults (18-30)</option>
+                        <option value="professionals">Professionals</option>
+                        <option value="entrepreneurs">Entrepreneurs</option>
+                        <option value="parents">Parents</option>
+                        <option value="students">Students</option>
+                        <option value="seniors">Seniors (50+)</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-4 border-t border-gray-200 space-y-3">
+                    <button onclick="generateSample()" class="w-full p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium">
+                        <i class="ri-magic-line mr-2"></i>
+                        Generate Sample
+                    </button>
+                    <button onclick="schedulePost()" class="w-full p-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition font-medium">
+                        <i class="ri-calendar-line mr-2"></i>
+                        Schedule Post
+                    </button>
+                    <button onclick="resetSettings()" class="w-full p-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                        <i class="ri-refresh-line mr-2"></i>
+                        Reset Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+   <script src="../assets/js/utils/helpers.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/generators/social.js"></script>
+</body>
+</html>
