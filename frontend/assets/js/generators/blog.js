@@ -198,6 +198,14 @@ async function sendMessage() {
             contentType: data.content_type
         });
         
+        // Auto-save to database
+        if (typeof saveToHistory === 'function') {
+            const saved = await saveToHistory('blog', message, data.content, 'gpt2', settings);
+            if (saved) {
+                console.log('Blog content saved to history');
+            }
+        }
+        
         // Success notification
         showNotification(`${selectedContentType.charAt(0).toUpperCase() + selectedContentType.slice(1)} content generated successfully!`, 'success');
         

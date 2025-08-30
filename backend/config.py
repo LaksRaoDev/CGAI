@@ -16,7 +16,7 @@ class Config:
     DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
     
     # Database Configuration
-    DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///content_ai.db'
+    DATABASE_URL = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:root@localhost/content_ai_db?charset=utf8mb4'
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
@@ -64,13 +64,13 @@ class Config:
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev_content_ai.db'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost/content_ai_db?charset=utf8mb4'
 
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:root@localhost/content_ai_db?charset=utf8mb4'
     
     # Production AI model settings
     DEFAULT_MODEL = 'microsoft/DialoGPT-medium'
@@ -79,7 +79,7 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test_content_ai.db'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost/test_content_ai_db?charset=utf8mb4'
     DEBUG = True
 
 # Configuration mapping

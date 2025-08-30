@@ -12,8 +12,8 @@ from datetime import datetime
 # Import configuration
 from config import config
 
-# Initialize extensions
-db = SQLAlchemy()
+# Import database models
+from models.database import db
 
 def create_app(config_name=None):
     """Application factory pattern"""
@@ -50,6 +50,8 @@ def register_blueprints(app):
     from api.routes.blog import blog_bp
     from api.routes.marketing import marketing_bp
     from api.routes.models import models_bp
+    from api.routes.auth import auth_bp
+    from api.routes.history import history_bp
     
     # Register API routes
     app.register_blueprint(product_bp, url_prefix=f"{app.config['API_PREFIX']}/product")
@@ -57,6 +59,8 @@ def register_blueprints(app):
     app.register_blueprint(blog_bp, url_prefix=f"{app.config['API_PREFIX']}/blog")
     app.register_blueprint(marketing_bp, url_prefix=f"{app.config['API_PREFIX']}/marketing")
     app.register_blueprint(models_bp, url_prefix=f"{app.config['API_PREFIX']}/models")
+    app.register_blueprint(auth_bp, url_prefix=f"{app.config['API_PREFIX']}/auth")
+    app.register_blueprint(history_bp, url_prefix=f"{app.config['API_PREFIX']}/history")
 
 def register_error_handlers(app):
     """Register error handlers"""

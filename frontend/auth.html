@@ -248,21 +248,37 @@
             document.getElementById('loginSpinner').classList.remove('hidden');
 
             try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
                 
-                // Store user session
-                localStorage.setItem('user', JSON.stringify({
-                    email: email,
-                    name: 'User',
-                    loginTime: new Date().toISOString()
-                }));
+                const data = await response.json();
                 
-                showNotification('Login successful!', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                if (data.success) {
+                    // Store user session with token
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.name,
+                        token: data.user.token,
+                        loginTime: new Date().toISOString()
+                    }));
+                    
+                    showNotification('Login successful!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Login failed', 'error');
+                }
                 
             } catch (error) {
                 showNotification('Login failed. Please try again.', 'error');
@@ -305,21 +321,38 @@
             document.getElementById('registerSpinner').classList.remove('hidden');
 
             try {
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                const response = await fetch('http://localhost:5000/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                });
                 
-                // Store user session
-                localStorage.setItem('user', JSON.stringify({
-                    email: email,
-                    name: name,
-                    loginTime: new Date().toISOString()
-                }));
+                const data = await response.json();
                 
-                showNotification('Registration successful!', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
+                if (data.success) {
+                    // Store user session with token
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.name,
+                        token: data.user.token,
+                        loginTime: new Date().toISOString()
+                    }));
+                    
+                    showNotification('Registration successful!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Registration failed', 'error');
+                }
                 
             } catch (error) {
                 showNotification('Registration failed. Please try again.', 'error');

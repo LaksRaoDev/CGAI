@@ -191,6 +191,14 @@ async function sendMessage() {
             platform: data.platform
         });
         
+        // Auto-save to database
+        if (typeof saveToHistory === 'function') {
+            const saved = await saveToHistory('social', message, data.content, 'gpt2', settings);
+            if (saved) {
+                console.log('Social media post saved to history');
+            }
+        }
+        
         // Success notification
         showNotification(`${selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)} post generated successfully!`, 'success');
         

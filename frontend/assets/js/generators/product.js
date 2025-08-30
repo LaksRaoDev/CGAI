@@ -156,6 +156,14 @@ async function sendMessage() {
             wordCount: data.word_count
         });
         
+        // Auto-save to database
+        if (typeof saveToHistory === 'function') {
+            const saved = await saveToHistory('product', message, data.description, 'gpt2', settings);
+            if (saved) {
+                console.log('Content saved to history');
+            }
+        }
+        
         // Success notification
         showNotification('Product description generated successfully!', 'success');
         

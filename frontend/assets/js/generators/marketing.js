@@ -185,6 +185,14 @@ async function sendMessage() {
             conversionScore: data.conversion_score
         });
         
+        // Auto-save to database
+        if (typeof saveToHistory === 'function') {
+            const saved = await saveToHistory('marketing', message, data.content, 'gpt2', settings);
+            if (saved) {
+                console.log('Marketing copy saved to history');
+            }
+        }
+        
         // Success notification
         showNotification(`${selectedCopyType.charAt(0).toUpperCase() + selectedCopyType.slice(1)} copy generated successfully! (${data.conversion_score}% conversion score)`, 'success');
         
