@@ -52,7 +52,10 @@
                         <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                             <i class="ri-user-line text-white"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">User</span>
+                        <span class="text-sm font-medium text-gray-700" id="userName">User</span>
+                        <button onclick="logout()" class="ml-2 text-gray-500 hover:text-gray-700 transition">
+                            <i class="ri-logout-box-line"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -85,7 +88,7 @@
                             <i class="ri-robot-line text-white text-sm"></i>
                         </div>
                         <div class="bg-gray-100 rounded-lg p-4 max-w-md">
-                            <p class="text-gray-800">வணக்கம்! High-converting marketing copy create பண்ண ready-ஆ இருக்கேன். உங்க product/service, target audience, campaign goal சொல்லுங்க. Sales-driven copy generate பண்ணுவேன்!</p>
+                            <p class="text-gray-800">Hello! I'm ready to create high-converting marketing copy for you. Please provide details about your product/service, target audience, and campaign goals. I'll generate sales-driven copy that converts!</p>
                         </div>
                     </div>
                 </div>
@@ -98,7 +101,7 @@
                         <input 
                             type="text" 
                             id="messageInput" 
-                            placeholder="Campaign details-ஐ describe பண்ணுங்க (e.g., Email campaign for fitness app, Landing page for online course)"
+                            placeholder="Describe your campaign details (e.g., Email campaign for fitness app, Landing page for online course)"
                             class="w-full p-3 pr-20 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-marketing/20 focus:border-marketing"
                         >
                         <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
@@ -299,8 +302,10 @@
     </main>
 
     <!-- Scripts -->
+    <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
 <script src="../assets/js/main.js"></script>
+<script src="../assets/js/models.js"></script>
 <script src="../assets/js/generators/marketing.js"></script>
 </body>
 </html>

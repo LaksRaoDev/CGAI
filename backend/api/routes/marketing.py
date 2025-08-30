@@ -1,16 +1,27 @@
 """
-Marketing Copy API Routes
+Marketing Copy API Routes - Updated with Gemini AI
 File: backend/api/routes/marketing.py
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
 import time
 import random
+import os
+import logging
 
 # Create blueprint
 marketing_bp = Blueprint('marketing', __name__)
 
-# Marketing copy templates
+# Import Gemini service
+try:
+    from services.gemini_service import get_gemini_service
+    GEMINI_AVAILABLE = True
+    logging.info("✅ Gemini AI service available for marketing copy")
+except ImportError as e:
+    GEMINI_AVAILABLE = False
+    logging.warning(f"⚠️ Gemini AI not available for marketing copy: {str(e)}")
+
+# Fallback mock templates (keep as backup)
 MARKETING_TEMPLATES = {
     'email': {
         'persuasive': {
@@ -34,9 +45,7 @@ Ready to transform your experience?
 Don't wait. Your future self will thank you.
 
 Best regards,
-The Team
-
-P.S. Still thinking about it? Check out what Sarah M. said: "This completely changed my approach to {topic}. I wish I'd started sooner!\""""
+The Team"""
         },
         'urgent': {
             'subject': "URGENT: {topic} - 24 Hours Left!",
@@ -50,19 +59,12 @@ This is it. In less than 24 hours, our exclusive {topic} offer disappears foreve
 → 1-year support included
 → 60-day money-back guarantee
 
-🚨 WHAT YOU MISS IF YOU WAIT:
-→ Paying 3x more later
-→ Missing the bonus content
-→ Staying stuck with old methods
-
 Right now: $97 (Regular price: $297)
 Tomorrow: GONE.
 
 [CLAIM YOUR SPOT NOW]
 
 This isn't a drill. When the timer hits zero, this offer vanishes.
-
-Act now or regret later.
 
 [SECURE YOUR ACCESS - FINAL HOURS]"""
         },
@@ -76,14 +78,6 @@ I wanted to reach out because I know you've been interested in {topic}, and I ju
 
 We've been working on something pretty special, and honestly? I think you're going to love it.
 
-It's all about making {topic} simple, effective, and actually enjoyable. (Yes, really!)
-
-Here's what caught my attention:
-• Real results in the first week
-• Super easy to get started
-• Works even if you're a complete beginner
-• Costs less than your monthly coffee budget
-
 Want to take a quick look? No pressure at all - just thought you might find it interesting.
 
 [CHECK IT OUT HERE]
@@ -91,199 +85,14 @@ Want to take a quick look? No pressure at all - just thought you might find it i
 Let me know what you think!
 
 Talk soon,
-[Your Name]
-
-P.S. There's a small bonus if you check it out today, but no worries if you can't. It'll still be awesome tomorrow!"""
+[Your Name]"""
         }
-    },
-    'landing': {
-        'persuasive': """# Finally! The Complete {topic} Solution You've Been Searching For
-
-## Struggling with {topic}? You're Not Alone.
-
-Thousands of people just like you have been frustrated by complicated, expensive, and ineffective solutions. But what if there was a better way?
-
-## Introducing the Revolutionary {topic} System
-
-Our breakthrough approach has helped over 10,000 people achieve remarkable results in just weeks, not months.
-
-### ✅ What You Get:
-- Complete step-by-step system
-- Video tutorials and guides  
-- 24/7 support community
-- 30-day money-back guarantee
-- Exclusive bonus materials worth $297
-
-### ✅ What You'll Achieve:
-- Master {topic} in record time
-- Save hours every week
-- See results from day one
-- Gain confidence and expertise
-
-## Don't Just Take Our Word For It
-
-*"This system completely transformed my approach to {topic}. I went from struggling beginner to confident expert in just 30 days!"* - Sarah M.
-
-## Limited Time: Special Launch Price
-
-~~Regular Price: $297~~
-**Today Only: $97** (Save $200!)
-
-### 🎁 BONUS: Order in the next 20 minutes and get:
-- Advanced techniques course ($97 value)
-- Private community access ($47 value)  
-- 1-on-1 consultation ($197 value)
-
-**Total Value: $638 - Your Price: Just $97**
-
-[GET INSTANT ACCESS NOW - $97]
-
-*30-day money-back guarantee. No questions asked.*""",
-
-        'urgent': """# 🚨 URGENT: {topic} Solution - Only 24 Hours Left!
-
-## This Offer DISAPPEARS at Midnight Tonight!
-
-You've been thinking about mastering {topic} for months. Maybe even years.
-
-How much longer will you wait?
-
-## What Happens When You Keep Waiting:
-❌ Prices go up (next week it's $297)
-❌ You miss the bonus materials (worth $341)
-❌ You stay frustrated with current methods
-❌ Others get ahead while you fall behind
-
-## What Happens When You Act TODAY:
-✅ Lock in the lowest price ever ($97 vs $297)
-✅ Get $341 in bonus materials FREE
-✅ Start seeing results within 48 hours
-✅ Join 10,000+ success stories
-
-## ⏰ COUNTDOWN TIMER: [23:47:32]
-
-Every second you wait, you're choosing to stay where you are.
-
-Don't let this moment slip away.
-
-[SECURE YOUR COPY NOW - FINAL HOURS]
-
-*Warning: When this timer hits zero, this offer is gone forever. No exceptions. No extensions.*
-
-## Still Hesitating? Here's What Others Say:
-
-*"I almost didn't buy because I thought I'd wait. Thank God I didn't! This changed everything for me."* - Mike T.
-
-[CLAIM YOUR SPOT BEFORE MIDNIGHT]"""
-    },
-    'ad': {
-        'persuasive': """Tired of struggling with {topic}?
-
-Our proven system has helped 10,000+ people master {topic} in just weeks.
-
-✓ Easy to follow
-✓ Guaranteed results  
-✓ 30-day money back
-
-Limited time: 50% off
-
-[Start Your Transformation Today]""",
-
-        'urgent': """LAST CHANCE: {topic} Solution
-
-24 HOURS LEFT!
-
-Don't miss out on the system that's changing lives.
-
-Regular price: $297
-TODAY ONLY: $97
-
-[Secure Your Copy Now]
-
-Timer: ⏰ 23:58:42""",
-
-        'exciting': """🔥 BREAKTHROUGH: {topic} Just Got 10x Easier!
-
-This is HUGE! 
-
-The {topic} method everyone's talking about is finally here.
-
-✨ 10,000+ success stories
-✨ Works in just days
-✨ No prior experience needed
-
-Ready to be next?
-
-[Join the Revolution]"""
-    },
-    'sales': """# The Ultimate {topic} Transformation System
-
-## Your Current Situation (And Why It's Not Your Fault)
-
-You've tried everything. Books, courses, YouTube videos, expensive consultations. Yet you're still struggling with {topic}.
-
-Here's the truth: It's not because you're not smart enough or dedicated enough. It's because you've been using outdated, incomplete methods.
-
-## The Solution That Changes Everything
-
-After 5 years of research and testing with over 10,000 students, we've cracked the code on {topic}.
-
-### The {topic} Master System includes:
-
-**Module 1: Foundation Mastery** ($97 value)
-- Core principles that 99% of people get wrong
-- The 3-step framework for instant results
-- Common mistakes that sabotage success
-
-**Module 2: Advanced Strategies** ($197 value)
-- Professional-level techniques
-- Case studies from real success stories
-- Troubleshooting guide for any situation
-
-**Module 3: Implementation Blueprint** ($147 value)
-- Step-by-step action plans
-- Templates and checklists
-- 90-day roadmap to mastery
-
-**BONUS 1: Private Community Access** ($97 value)
-- Connect with 10,000+ members
-- Weekly Q&A sessions
-- Peer support and accountability
-
-**BONUS 2: 1-on-1 Strategy Session** ($297 value)
-- Personal consultation with expert
-- Customized action plan
-- Direct access for questions
-
-### Total Value: $835
-### Your Investment Today: Just $197
-
-## Why This Price Won't Last
-
-We're keeping this introductory price for the first 500 students only. After that, it goes to the full price of $497.
-
-## Our Iron-Clad Guarantee
-
-Try the {topic} Master System for 60 days. If you don't see dramatic improvement, we'll refund every penny. No questions asked.
-
-## What Our Students Say
-
-*"I've spent thousands on {topic} training. This $197 system taught me more in 30 days than everything else combined."* - Jennifer L.
-
-*"Skeptical at first, but the results speak for themselves. Worth every penny and more."* - David R.
-
-## Ready to Transform Your {topic} Skills?
-
-Don't let another day pass wondering "what if."
-
-[ENROLL NOW - $197]
-
-Questions? Email us at support@example.com or call 1-800-XXX-XXXX"""
+    }
 }
 
 @marketing_bp.route('/generate', methods=['POST'])
 def generate_marketing_copy():
-    """Generate marketing copy based on input"""
+    """Generate marketing copy using AI or fallback templates"""
     try:
         # Get request data
         data = request.get_json()
@@ -309,13 +118,47 @@ def generate_marketing_copy():
         tone = settings.get('tone', 'persuasive')
         goal = settings.get('goal', 'conversion')
         
-        # Simulate processing time
-        time.sleep(random.uniform(2, 3))
+        # Try Gemini AI first, fallback to templates
+        if GEMINI_AVAILABLE and os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here':
+            try:
+                logging.info(f"🤖 Using Gemini AI for marketing copy generation - {copy_type}")
+                gemini_service = get_gemini_service()
+                result = gemini_service.generate_marketing_copy(topic, settings)
+                
+                if result['success']:
+                    # Calculate conversion score (AI-enhanced)
+                    conversion_score = calculate_ai_conversion_score(result['content'], settings)
+                    
+                    return jsonify({
+                        'success': True,
+                        'data': {
+                            'content': result['content'],
+                            'word_count': result['word_count'],
+                            'conversion_score': conversion_score,
+                            'copy_type': copy_type,
+                            'ai_powered': True,
+                            'model_used': result['model_used'],
+                            'generation_time': result.get('generation_time', 0),
+                            'settings_used': {
+                                'copy_type': copy_type,
+                                'tone': tone,
+                                'goal': goal,
+                                'audience': settings.get('audience', 'business')
+                            }
+                        },
+                        'timestamp': datetime.utcnow().isoformat()
+                    })
+                else:
+                    logging.warning("⚠️ Gemini failed for marketing, using fallback templates")
+                    
+            except Exception as e:
+                logging.error(f"❌ Gemini error for marketing: {str(e)}")
         
-        # Generate copy
-        copy_content = generate_copy(topic, copy_type, tone, settings)
+        # Fallback to mock templates
+        logging.info(f"📝 Using mock templates for marketing copy generation - {copy_type}")
+        time.sleep(random.uniform(2, 3))  # Simulate processing
         
-        # Calculate conversion score (mock)
+        copy_content = generate_mock_copy(topic, copy_type, tone, settings)
         conversion_score = random.randint(75, 95)
         
         return jsonify({
@@ -325,6 +168,9 @@ def generate_marketing_copy():
                 'word_count': len(copy_content.split()),
                 'conversion_score': conversion_score,
                 'copy_type': copy_type,
+                'ai_powered': False,
+                'model_used': 'mock-template',
+                'generation_time': random.uniform(2, 3),
                 'settings_used': {
                     'copy_type': copy_type,
                     'tone': tone,
@@ -336,27 +182,24 @@ def generate_marketing_copy():
         })
         
     except Exception as e:
+        logging.error(f"❌ Marketing copy generation error: {str(e)}")
         return jsonify({
             'error': 'Internal server error',
             'message': str(e),
             'timestamp': datetime.utcnow().isoformat()
         }), 500
 
-def generate_copy(topic, copy_type, tone, settings):
-    """Generate marketing copy using templates"""
+def generate_mock_copy(topic, copy_type, tone, settings):
+    """Generate marketing copy using mock templates (fallback)"""
     
     # Get template
-    copy_templates = MARKETING_TEMPLATES.get(copy_type, MARKETING_TEMPLATES['email'])
+    copy_templates = MARKETING_TEMPLATES.get('email', MARKETING_TEMPLATES['email'])
+    template = copy_templates.get(tone, copy_templates['persuasive'])
     
     if copy_type == 'email':
-        template = copy_templates.get(tone, copy_templates['persuasive'])
         copy = f"Subject: {template['subject']}\n\n{template['body']}"
-    elif copy_type in ['landing', 'sales']:
-        template = copy_templates.get(tone, copy_templates['persuasive'] if copy_type == 'landing' else copy_templates)
-        copy = template
-    else:  # ad
-        template = copy_templates.get(tone, copy_templates['persuasive'])
-        copy = template
+    else:
+        copy = template['body']
     
     # Replace topic placeholder
     copy = copy.format(topic=topic)
@@ -373,9 +216,46 @@ def generate_copy(topic, copy_type, tone, settings):
     
     return copy
 
+def calculate_ai_conversion_score(content, settings):
+    """Calculate conversion score for AI-generated content"""
+    score = 70
+    
+    # Analyze content elements
+    if any(word in content.lower() for word in ['guarantee', 'risk-free', 'money-back']):
+        score += 10
+    
+    if any(word in content.lower() for word in ['limited', 'urgent', 'now', 'today only']):
+        score += 8
+    
+    if any(word in content.lower() for word in ['proven', 'results', 'success', 'testimonial']):
+        score += 7
+    
+    if len(content.split()) > 100:  # Comprehensive content
+        score += 5
+    
+    # Cap at 98 to be realistic
+    return min(score, 98)
+
 @marketing_bp.route('/templates', methods=['GET'])
 def get_marketing_templates():
-    """Get available marketing copy templates and options"""
+    """Get available marketing copy templates and AI status"""
+    ai_status = {
+        'available': GEMINI_AVAILABLE,
+        'model': 'gemini-1.5-flash' if GEMINI_AVAILABLE else None,
+        'api_key_set': bool(os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here')
+    }
+    
+    # Test connection if available
+    if GEMINI_AVAILABLE and ai_status['api_key_set']:
+        try:
+            gemini_service = get_gemini_service()
+            connection_test = gemini_service.test_connection()
+            ai_status['connected'] = connection_test['connected']
+        except Exception:
+            ai_status['connected'] = False
+    else:
+        ai_status['connected'] = False
+    
     return jsonify({
         'success': True,
         'data': {
@@ -396,7 +276,8 @@ def get_marketing_templates():
             ],
             'goals': ['conversion', 'awareness', 'engagement', 'retention', 'leads', 'sales'],
             'audiences': ['business', 'consumers', 'young', 'families', 'seniors', 'entrepreneurs', 'students'],
-            'cta_styles': ['direct', 'benefit', 'urgent', 'social']
+            'cta_styles': ['direct', 'benefit', 'urgent', 'social'],
+            'ai_status': ai_status
         },
         'timestamp': datetime.utcnow().isoformat()
     })
@@ -414,9 +295,9 @@ def analyze_copy():
                 'timestamp': datetime.utcnow().isoformat()
             }), 400
         
-        # Mock analysis (in real app, use ML models)
+        # Enhanced analysis with AI awareness
         analysis = {
-            'conversion_score': random.randint(70, 95),
+            'conversion_score': calculate_ai_conversion_score(content, {}),
             'readability_score': random.randint(75, 90),
             'emotional_impact': random.randint(65, 85),
             'urgency_level': random.randint(50, 95),
@@ -451,6 +332,7 @@ def validate_marketing_input():
         copy_type = data.get('copy_type', 'email')
         
         errors = []
+        warnings = []
         
         if not topic:
             errors.append("Topic is required")
@@ -463,9 +345,14 @@ def validate_marketing_input():
         if copy_type not in ['email', 'landing', 'ad', 'sales']:
             errors.append("Invalid copy type")
         
+        # Check AI availability
+        if not GEMINI_AVAILABLE or not os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_API_KEY') == 'your_gemini_api_key_here':
+            warnings.append("AI service not configured. Using mock templates.")
+        
         return jsonify({
             'valid': len(errors) == 0,
             'errors': errors,
+            'warnings': warnings,
             'timestamp': datetime.utcnow().isoformat()
         })
         
@@ -473,5 +360,6 @@ def validate_marketing_input():
         return jsonify({
             'valid': False,
             'errors': ['Invalid input format'],
+            'warnings': [],
             'timestamp': datetime.utcnow().isoformat()
         }), 400

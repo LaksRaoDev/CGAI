@@ -300,17 +300,59 @@ async function checkBackendConnection() {
     }
 }
 
-// Load templates from API
+// Load templates and check AI status
 async function loadTemplates() {
     try {
         const response = await api.getProductTemplates();
         const data = Utils.formatResponse(response);
         
-        // Update UI with available options (if needed)
+        // Update UI with available options
         console.log('Available templates:', data);
+        
+        // Show AI status
+        if (data.ai_status) {
+            showAIStatus(data.ai_status);
+        }
         
     } catch (error) {
         console.warn('Failed to load templates:', error);
+    }
+}
+
+// Show AI status to user
+function showAIStatus(aiStatus) {
+    const statusElement = document.getElementById('aiStatus');
+    if (!statusElement) {
+        // Create status element if it doesn't exist
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'aiStatus';
+        statusDiv.className = 'mb-4 p-3 rounded-lg text-sm';
+        document.querySelector('.generator-container').insertBefore(statusDiv, document.querySelector('.generator-container').firstChild);
+    }
+    
+    const statusEl = document.getElementById('aiStatus');
+    
+    if (aiStatus.available && aiStatus.api_key_set && aiStatus.connected) {
+        statusEl.innerHTML = `
+            <div class="flex items-center space-x-2 text-green-700 bg-green-50 border border-green-200 p-3 rounded-lg">
+                <i class="ri-robot-line"></i>
+                <span>🤖 AI-Powered Generation Active (Gemini AI)</span>
+            </div>
+        `;
+    } else if (aiStatus.available && !aiStatus.api_key_set) {
+        statusEl.innerHTML = `
+            <div class="flex items-center space-x-2 text-orange-700 bg-orange-50 border border-orange-200 p-3 rounded-lg">
+                <i class="ri-settings-line"></i>
+                <span>⚙️ AI Available - Configure API Key for Enhanced Generation</span>
+            </div>
+        `;
+    } else {
+        statusEl.innerHTML = `
+            <div class="flex items-center space-x-2 text-blue-700 bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                <i class="ri-file-text-line"></i>
+                <span>📝 Using Template-Based Generation</span>
+            </div>
+        `;
     }
 }
 

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Setup Guide - Content Generation AI</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        accent: '#7c3aed'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="goBack()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                    <i class="ri-arrow-left-line text-xl text-gray-600"></i>
+                </button>
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-900">AI Setup Guide</h1>
+                    <p class="text-sm text-gray-500">Configure Google Gemini API for Enhanced AI Generation</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Current Status -->
+        <div id="currentStatus" class="mb-8 p-6 bg-white rounded-lg shadow-sm border">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Current AI Status</h2>
+            <div id="statusContent" class="space-y-3">
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-3"></div>
+                    <span class="text-gray-600">Checking AI service status...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Steps -->
+        <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-6">Setup Instructions</h2>
+            
+            <!-- Step 1 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">1</div>
+                    <h3 class="text-lg font-medium text-gray-900">Get Free Gemini API Key</h3>
+                </div>
+                <div class="ml-11 space-y-4">
+                    <p class="text-gray-600">Google Gemini API provides powerful AI content generation capabilities for free.</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="ri-information-line text-blue-600 mt-0.5"></i>
+                            <div>
+                                <p class="text-blue-800 font-medium">Free Tier Includes:</p>
+                                <ul class="text-blue-700 text-sm mt-2 space-y-1">
+                                    <li>• 15 requests per minute</li>
+                                    <li>• 1 million tokens per day</li>
+                                    <li>• No cost for usage within limits</li>
+                                    <li>• Perfect for testing and small projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="https://makersuite.google.com/app/apikey" target="_blank" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+                            <i class="ri-external-link-line mr-2"></i>
+                            Get API Key
+                        </a>
+                        <button onclick="copyText('https://makersuite.google.com/app/apikey')" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="ri-file-copy-line mr-2"></i>
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">2</div>
+                    <h3 class="text-lg font-medium text-gray-900">Configure API Key</h3>
+                </div>
+                <div class="ml-11 space-y-4">
+                    <p class="text-gray-600">Add your API key to the backend environment configuration.</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="text-sm font-medium text-gray-700 mb-2">📁 File: <code class="bg-gray-200 px-2 py-1 rounded">backend/.env</code></p>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-400"># Add your Gemini API key</span>
+                                <button onclick="copyEnvConfig()" class="text-gray-400 hover:text-white transition">
+                                    <i class="ri-file-copy-line"></i>
+                                </button>
+                            </div>
+                            <div>GEMINI_API_KEY=your_actual_api_key_here</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="ri-warning-line text-yellow-600 mt-0.5"></i>
+                            <div>
+                                <p class="text-yellow-800 font-medium">Important:</p>
+                                <p class="text-yellow-700 text-sm mt-1">Replace <code>your_actual_api_key_here</code> with your real API key from step 1.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">3</div>
+                    <h3 class="text-lg font-medium text-gray-900">Install Dependencies</h3>
+                </div>
+                <div class="ml-11 space-y-4">
+                    <p class="text-gray-600">Install the required Python packages for AI functionality.</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-700">Run in your backend directory:</p>
+                            <button onclick="copyCommand('pip install google-generativeai==0.8.3')" class="text-gray-400 hover:text-gray-600 transition">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                            pip install google-generativeai==0.8.3
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-700">Or install all requirements:</p>
+                            <button onclick="copyCommand('pip install -r requirements.txt')" class="text-gray-400 hover:text-gray-600 transition">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                            pip install -r requirements.txt
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">4</div>
+                    <h3 class="text-lg font-medium text-gray-900">Restart Backend Server</h3>
+                </div>
+                <div class="ml-11 space-y-4">
+                    <p class="text-gray-600">Restart your backend server to apply the changes.</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium text-gray-700">Stop current server (Ctrl+C) and restart:</p>
+                            <button onclick="copyCommand('python app.py')" class="text-gray-400 hover:text-gray-600 transition">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
+                        </div>
+                        <div class="bg-gray-900 text-green-400 p-3 rounded font-mono text-sm">
+                            python app.py
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button onclick="checkStatus()" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            <i class="ri-refresh-line mr-2"></i>
+                            Check Status
+                        </button>
+                        <button onclick="testConnection()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="ri-play-line mr-2"></i>
+                            Test AI
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Troubleshooting</h2>
+            
+            <div class="space-y-4">
+                <div class="border-l-4 border-orange-400 pl-4">
+                    <h4 class="font-medium text-gray-900">Backend server not starting?</h4>
+                    <p class="text-sm text-gray-600 mt-1">Make sure you have Python 3.8+ installed and all dependencies are installed correctly.</p>
+                </div>
+                
+                <div class="border-l-4 border-orange-400 pl-4">
+                    <h4 class="font-medium text-gray-900">API key errors?</h4>
+                    <p class="text-sm text-gray-600 mt-1">Double-check your API key is correct and you've saved the .env file properly.</p>
+                </div>
+                
+                <div class="border-l-4 border-orange-400 pl-4">
+                    <h4 class="font-medium text-gray-900">Still using templates?</h4>
+                    <p class="text-sm text-gray-600 mt-1">The system will automatically fallback to templates if AI is not available. This ensures your app always works.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        // Navigation
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // Copy functions
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Link copied to clipboard!', 'success');
+            });
+        }
+
+        function copyCommand(command) {
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('Command copied to clipboard!', 'success');
+            });
+        }
+
+        function copyEnvConfig() {
+            navigator.clipboard.writeText('GEMINI_API_KEY=your_actual_api_key_here').then(() => {
+                showNotification('Configuration copied to clipboard!', 'success');
+            });
+        }
+
+        // Status checking
+        async function checkStatus() {
+            const statusContent = document.getElementById('statusContent');
+            statusContent.innerHTML = `
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-3"></div>
+                    <span class="text-gray-600">Checking AI service status...</span>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/product/ai-status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const status = data.data;
+                    displayStatus(status);
+                } else {
+                    throw new Error('Status check failed');
+                }
+            } catch (error) {
+                statusContent.innerHTML = `
+                    <div class="flex items-center text-red-600">
+                        <i class="ri-error-warning-line mr-3"></i>
+                        <span>Unable to connect to backend server</span>
+                    </div>
+                `;
+            }
+        }
+
+        function displayStatus(status) {
+            const statusContent = document.getElementById('statusContent');
+            
+            let statusHTML = '';
+            
+            if (status.service_status === 'online') {
+                statusHTML = `
+                    <div class="flex items-center text-green-600 mb-3">
+                        <i class="ri-check-circle-line mr-3"></i>
+                        <span class="font-medium">✅ Gemini AI Active and Working!</span>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p>• Model: ${status.model}</p>
+                        <p>• Status: Connected</p>
+                        <p>• Last tested: ${new Date(status.last_tested).toLocaleString()}</p>
+                    </div>
+                `;
+            } else if (status.gemini_available && !status.api_key_configured) {
+                statusHTML = `
+                    <div class="flex items-center text-orange-600 mb-3">
+                        <i class="ri-settings-line mr-3"></i>
+                        <span class="font-medium">⚙️ AI Available - API Key Not Configured</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p>Follow the setup instructions above to configure your Gemini API key.</p>
+                    </div>
+                `;
+            } else if (!status.gemini_available) {
+                statusHTML = `
+                    <div class="flex items-center text-blue-600 mb-3">
+                        <i class="ri-file-text-line mr-3"></i>
+                        <span class="font-medium">📝 Using Template-Based Generation</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p>Install google-generativeai package to enable AI features.</p>
+                    </div>
+                `;
+            } else {
+                statusHTML = `
+                    <div class="flex items-center text-red-600 mb-3">
+                        <i class="ri-error-warning-line mr-3"></i>
+                        <span class="font-medium">❌ AI Service Error</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <p>Error: ${status.error || 'Unknown error'}</p>
+                    </div>
+                `;
+            }
+            
+            statusContent.innerHTML = statusHTML;
+        }
+
+        async function testConnection() {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/product/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_info: 'Test wireless headphones',
+                        settings: { tone: 'professional', length: 'short' }
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(
+                        data.data.ai_powered ? 
+                        '✅ AI Test Successful! Generated with Gemini AI.' : 
+                        '📝 Template Test Successful! AI not configured.', 
+                        'success'
+                    );
+                } else {
+                    showNotification('❌ Test Failed: ' + data.error, 'error');
+                }
+                
+            } catch (error) {
+                showNotification('❌ Connection Test Failed', 'error');
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                type === 'warning' ? 'bg-orange-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkStatus();
+        });
+    </script>
+</body>
+</html>

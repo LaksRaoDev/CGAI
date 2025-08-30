@@ -6,6 +6,10 @@
 
 // Navigation function for generator cards
 function navigateToGenerator(type) {
+    if (!requireAuth()) {
+        return;
+    }
+    
     const routes = {
         'product': 'pages/product-generator.html',
         'social': 'pages/social-media.html',
@@ -106,16 +110,61 @@ function toggleMobileMenu() {
     }
 }
 
+// Authentication functions
+function checkAuthStatus() {
+    const user = localStorage.getItem('user');
+    if (user) {
+        const userData = JSON.parse(user);
+        document.getElementById('userSection').classList.remove('hidden');
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('userName').textContent = userData.name;
+        return true;
+    } else {
+        document.getElementById('userSection').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+        return false;
+    }
+}
+
+function goToAuth() {
+    window.location.href = 'auth.html';
+}
+
+function logout() {
+    localStorage.removeItem('user');
+    showNotification('Logged out successfully!', 'success');
+    checkAuthStatus();
+}
+
+function requireAuth() {
+    if (!checkAuthStatus()) {
+        showNotification('Please login to access this feature', 'warning');
+        setTimeout(() => {
+            goToAuth();
+        }, 1000);
+        return false;
+    }
+    return true;
+}
+
 // Initialize dashboard when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('ContentAI Pro Dashboard initialized');
+    
+    // Check authentication status
+    const isLoggedIn = checkAuthStatus();
     
     // Initialize card hover effects
     initializeCardEffects();
     
     // Show welcome notification
     setTimeout(() => {
-        showNotification('Welcome to ContentAI Pro! Select a generator to start creating content.', 'success');
+        if (isLoggedIn) {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            showNotification(`Welcome back, ${userData.name}! Ready to create amazing content?`, 'success');
+        } else {
+            showNotification('Welcome to ContentAI Pro! Please login to start creating content.', 'info');
+        }
     }, 1000);
     
     // Add smooth scrolling to all anchor links

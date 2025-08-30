@@ -1,16 +1,27 @@
 """
-Blog Content API Routes
+Blog Content API Routes - Updated with Gemini AI
 File: backend/api/routes/blog.py
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
 import time
 import random
+import os
+import logging
 
 # Create blueprint
 blog_bp = Blueprint('blog', __name__)
 
-# Blog content templates
+# Import Gemini service
+try:
+    from services.gemini_service import get_gemini_service
+    GEMINI_AVAILABLE = True
+    logging.info("✅ Gemini AI service available for blog content")
+except ImportError as e:
+    GEMINI_AVAILABLE = False
+    logging.warning(f"⚠️ Gemini AI not available for blog content: {str(e)}")
+
+# Fallback mock templates (keep as backup)
 BLOG_TEMPLATES = {
     'article': {
         'informative': """# {topic}: A Comprehensive Guide
@@ -49,21 +60,7 @@ Hey there! So you're curious about {topic}? That's awesome! This is one of those
 
 Look, I get it. Another thing to learn, right? But here's the thing - {topic} is actually pretty amazing when you see what it can do for you.
 
-Think about it this way: remember when smartphones first came out and some people said "I don't need all that fancy stuff"? Well, {topic} is kind of like that, except it's happening right now.
-
-## Getting Started (It's Easier Than You Think!)
-
-The best part about {topic}? You don't need to be a rocket scientist to understand it. Here's what I wish someone had told me when I started:
-
-Start small. Don't try to master everything at once. Pick one area and focus on that first.
-
-## Real Talk: What Are the Challenges?
-
-I'm not going to sugarcoat this - there are some bumps along the way. But honestly, that's true for anything worth doing, right?
-
-## Your Next Steps
-
-Ready to dive in? Here's what I recommend: take it one step at a time, be patient with yourself, and remember that everyone starts somewhere.""",
+Think about it this way: remember when smartphones first came out and some people said "I don't need all that fancy stuff"? Well, {topic} is kind of like that, except it's happening right now.""",
 
         'professional': """# {topic}: Strategic Considerations and Implementation Framework
 
@@ -71,23 +68,7 @@ In today's competitive business environment, {topic} has emerged as a critical d
 
 ## Executive Summary
 
-This analysis examines the strategic implications of {topic} and provides a framework for successful implementation across diverse organizational contexts.
-
-## Market Context and Business Drivers
-
-Current market dynamics necessitate a sophisticated approach to {topic}. Organizations that fail to adapt risk falling behind competitors who leverage these capabilities effectively.
-
-## Implementation Framework
-
-Successful deployment of {topic} requires a structured approach encompassing people, processes, and technology.
-
-## Risk Management and Mitigation
-
-Organizations must address potential risks through proactive planning and contingency measures. Critical success factors include stakeholder buy-in, adequate resource allocation, and continuous monitoring.
-
-## Recommendations
-
-Based on current market conditions and best practices, we recommend a phased approach that balances speed-to-market with risk management considerations."""
+This analysis examines the strategic implications of {topic} and provides a framework for successful implementation across diverse organizational contexts."""
     },
     'summary': """# {topic} - Key Points Summary
 
@@ -98,78 +79,31 @@ Based on current market conditions and best practices, we recommend a phased app
 - Improved efficiency and productivity
 - Cost-effective solutions
 - Enhanced user experience
-- Scalable implementation options
-
-## Implementation Essentials
-Getting started with {topic} requires careful planning and a structured approach.
-
-## Expected Outcomes
-Organizations and individuals who successfully implement {topic} strategies typically experience improved performance metrics and enhanced satisfaction.
-
-## Next Steps
-To maximize the benefits of {topic}, focus on building foundational knowledge and starting with small, manageable projects.""",
-
+- Scalable implementation options""",
+    
     'outline': """# {topic} - Comprehensive Outline
 
 ## I. Introduction
 - Hook: Engaging opening statement about {topic}
 - Background information and context
 - Thesis statement and main objectives
-- Preview of key points to be covered
 
 ## II. Understanding {topic}
 - Definition and core concepts
-- Historical development and evolution
 - Current relevance and importance
-- Common misconceptions addressed
 
-## III. Key Benefits and Advantages
-- Primary benefits
-- Supporting evidence
-- Statistical data and research findings
-- Case studies and real-world examples
-
-## IV. Implementation Strategy
-- Getting started
-- Prerequisites and requirements
-- Step-by-step process breakdown
-- Essential tools and resources
-
-## V. Advanced Considerations
-- Scaling strategies
-- Integration with existing systems
-- Future developments and trends
-
-## VI. Challenges and Solutions
-- Common obstacles and barriers
-- Practical solutions and workarounds
-- Risk mitigation strategies
-
-## VII. Conclusion
-- Summary of key takeaways
-- Call to action for readers
-- Final recommendations and next steps""",
-
+## III. Key Benefits and Implementation
+- Primary benefits and advantages
+- Step-by-step implementation process""",
+    
     'intro': """# Introduction: Understanding {topic}
 
-In today's rapidly evolving landscape, {topic} has emerged as a pivotal element that shapes how we approach modern challenges and opportunities. Whether you're a seasoned professional or someone just beginning to explore this field, understanding {topic} is essential for navigating the complexities of our current environment.
-
-## Why {topic} Matters Now
-
-The significance of {topic} extends far beyond theoretical concepts. Recent developments have demonstrated its practical impact across various sectors, influencing everything from daily operations to long-term strategic planning.
-
-## What You'll Discover
-
-This comprehensive exploration will guide you through the essential aspects of {topic}, covering both foundational principles and advanced applications. You'll gain insights into core concepts, practical implementation strategies, real-world applications, and future trends.
-
-## The Journey Ahead
-
-Understanding {topic} is not just about acquiring knowledge—it's about developing the capability to apply these insights effectively in real-world situations. The investment you make in learning about {topic} today will provide dividends in improved outcomes and enhanced efficiency."""
+In today's rapidly evolving landscape, {topic} has emerged as a pivotal element that shapes how we approach modern challenges and opportunities. Whether you're a seasoned professional or someone just beginning to explore this field, understanding {topic} is essential."""
 }
 
 @blog_bp.route('/generate', methods=['POST'])
 def generate_blog_content():
-    """Generate blog content based on input"""
+    """Generate blog content using AI or fallback templates"""
     try:
         # Get request data
         data = request.get_json()
@@ -195,11 +129,43 @@ def generate_blog_content():
         style = settings.get('style', 'informative')
         word_count = int(settings.get('wordCount', 500))
         
-        # Simulate processing time (longer for blog content)
-        time.sleep(random.uniform(2, 4))
+        # Try Gemini AI first, fallback to templates
+        if GEMINI_AVAILABLE and os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here':
+            try:
+                logging.info(f"🤖 Using Gemini AI for blog content generation - {content_type}")
+                gemini_service = get_gemini_service()
+                result = gemini_service.generate_blog_content(topic, settings)
+                
+                if result['success']:
+                    return jsonify({
+                        'success': True,
+                        'data': {
+                            'content': result['content'],
+                            'word_count': result['word_count'],
+                            'content_type': content_type,
+                            'ai_powered': True,
+                            'model_used': result['model_used'],
+                            'generation_time': result.get('generation_time', 0),
+                            'settings_used': {
+                                'content_type': content_type,
+                                'style': style,
+                                'word_count': word_count,
+                                'audience': settings.get('audience', 'general')
+                            }
+                        },
+                        'timestamp': datetime.utcnow().isoformat()
+                    })
+                else:
+                    logging.warning("⚠️ Gemini failed for blog, using fallback templates")
+                    
+            except Exception as e:
+                logging.error(f"❌ Gemini error for blog: {str(e)}")
         
-        # Generate content
-        content = generate_content(topic, content_type, style, word_count, settings)
+        # Fallback to mock templates
+        logging.info(f"📝 Using mock templates for blog content generation - {content_type}")
+        time.sleep(random.uniform(2, 4))  # Simulate processing
+        
+        content = generate_mock_content(topic, content_type, style, word_count, settings)
         
         return jsonify({
             'success': True,
@@ -207,6 +173,9 @@ def generate_blog_content():
                 'content': content,
                 'word_count': len(content.split()),
                 'content_type': content_type,
+                'ai_powered': False,
+                'model_used': 'mock-template',
+                'generation_time': random.uniform(2, 4),
                 'settings_used': {
                     'content_type': content_type,
                     'style': style,
@@ -218,14 +187,15 @@ def generate_blog_content():
         })
         
     except Exception as e:
+        logging.error(f"❌ Blog content generation error: {str(e)}")
         return jsonify({
             'error': 'Internal server error',
             'message': str(e),
             'timestamp': datetime.utcnow().isoformat()
         }), 500
 
-def generate_content(topic, content_type, style, word_count, settings):
-    """Generate blog content using templates"""
+def generate_mock_content(topic, content_type, style, word_count, settings):
+    """Generate blog content using mock templates (fallback)"""
     
     # Get template
     if content_type == 'article':
@@ -273,7 +243,24 @@ Now that you understand the fundamentals of {topic}, it's time to take action. S
 
 @blog_bp.route('/templates', methods=['GET'])
 def get_blog_templates():
-    """Get available blog content templates and options"""
+    """Get available blog content templates and AI status"""
+    ai_status = {
+        'available': GEMINI_AVAILABLE,
+        'model': 'gemini-1.5-flash' if GEMINI_AVAILABLE else None,
+        'api_key_set': bool(os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here')
+    }
+    
+    # Test connection if available
+    if GEMINI_AVAILABLE and ai_status['api_key_set']:
+        try:
+            gemini_service = get_gemini_service()
+            connection_test = gemini_service.test_connection()
+            ai_status['connected'] = connection_test['connected']
+        except Exception:
+            ai_status['connected'] = False
+    else:
+        ai_status['connected'] = False
+    
     return jsonify({
         'success': True,
         'data': {
@@ -296,7 +283,8 @@ def get_blog_templates():
             'categories': [
                 'technology', 'business', 'lifestyle', 'health', 'education', 
                 'travel', 'food', 'finance', 'marketing', 'personal'
-            ]
+            ],
+            'ai_status': ai_status
         },
         'timestamp': datetime.utcnow().isoformat()
     })
@@ -309,6 +297,7 @@ def validate_blog_input():
         topic = data.get('topic', '')
         
         errors = []
+        warnings = []
         
         if not topic:
             errors.append("Topic is required")
@@ -317,9 +306,14 @@ def validate_blog_input():
         elif len(topic) > 200:
             errors.append("Topic must be less than 200 characters")
         
+        # Check AI availability
+        if not GEMINI_AVAILABLE or not os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_API_KEY') == 'your_gemini_api_key_here':
+            warnings.append("AI service not configured. Using mock templates.")
+        
         return jsonify({
             'valid': len(errors) == 0,
             'errors': errors,
+            'warnings': warnings,
             'timestamp': datetime.utcnow().isoformat()
         })
         
@@ -327,5 +321,6 @@ def validate_blog_input():
         return jsonify({
             'valid': False,
             'errors': ['Invalid input format'],
+            'warnings': [],
             'timestamp': datetime.utcnow().isoformat()
         }), 400

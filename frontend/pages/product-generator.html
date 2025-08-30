@@ -51,7 +51,10 @@
                         <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                             <i class="ri-user-line text-white"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">User</span>
+                        <span class="text-sm font-medium text-gray-700" id="userName">User</span>
+                        <button onclick="logout()" class="ml-2 text-gray-500 hover:text-gray-700 transition">
+                            <i class="ri-logout-box-line"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,7 +87,7 @@
                             <i class="ri-robot-line text-white text-sm"></i>
                         </div>
                         <div class="bg-gray-100 rounded-lg p-4 max-w-md">
-                            <p class="text-gray-800">வணக்கம்! Product description generate பண்ண ready-ஆ இருக்கேன். உங்க product details சொல்லுங்க - product name, key features, target audience, எல்லாம் சொன்னா அதற்கு best description create பண்ணுவேன்!</p>
+                            <p class="text-gray-800">Hello! I'm ready to generate product descriptions for you. Please provide your product details - product name, key features, target audience, and any other relevant information. I'll create the best description for your product!</p>
                         </div>
                     </div>
                 </div>
@@ -97,7 +100,7 @@
                         <input 
                             type="text" 
                             id="messageInput" 
-                            placeholder="Product details-ஐ describe பண்ணுங்க (e.g., Wireless Bluetooth Headphones with noise cancellation)"
+                            placeholder="Describe your product details (e.g., Wireless Bluetooth Headphones with noise cancellation)"
                             class="w-full p-3 pr-20 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                         >
                         <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
@@ -266,8 +269,10 @@
 
     <!-- Scripts -->
     <!-- In pages/product-generator.html, add this line before the existing scripts: -->
+<script src="../assets/js/auth.js"></script>
 <script src="../assets/js/utils/helpers.js"></script>
 <script src="../assets/js/main.js"></script>
+<script src="../assets/js/models.js"></script>
 <script src="../assets/js/generators/product.js"></script>
 </body>
 </html>

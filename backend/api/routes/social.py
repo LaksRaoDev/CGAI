@@ -1,16 +1,27 @@
 """
-Social Media API Routes
+Social Media API Routes - Updated with Gemini AI
 File: backend/api/routes/social.py
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
 import time
 import random
+import os
+import logging
 
 # Create blueprint
 social_bp = Blueprint('social', __name__)
 
-# Social media templates
+# Import Gemini service
+try:
+    from services.gemini_service import get_gemini_service
+    GEMINI_AVAILABLE = True
+    logging.info("✅ Gemini AI service available for social media")
+except ImportError as e:
+    GEMINI_AVAILABLE = False
+    logging.warning(f"⚠️ Gemini AI not available for social media: {str(e)}")
+
+# Fallback mock templates (keep as backup)
 SOCIAL_TEMPLATES = {
     'facebook': {
         'promotional': {
@@ -57,7 +68,7 @@ PLATFORM_HASHTAGS = {
 
 @social_bp.route('/generate', methods=['POST'])
 def generate_social_post():
-    """Generate social media post based on input"""
+    """Generate social media post using AI or fallback templates"""
     try:
         # Get request data
         data = request.get_json()
@@ -83,11 +94,43 @@ def generate_social_post():
         post_type = settings.get('postType', 'promotional')
         tone = settings.get('tone', 'friendly')
         
-        # Simulate processing time
-        time.sleep(random.uniform(1, 2))
+        # Try Gemini AI first, fallback to templates
+        if GEMINI_AVAILABLE and os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here':
+            try:
+                logging.info(f"🤖 Using Gemini AI for social media post generation - {platform}")
+                gemini_service = get_gemini_service()
+                result = gemini_service.generate_social_post(topic, settings)
+                
+                if result['success']:
+                    return jsonify({
+                        'success': True,
+                        'data': {
+                            'content': result['content'],
+                            'character_count': result['character_count'],
+                            'platform': result['platform'],
+                            'hashtags_included': result['hashtags_included'],
+                            'ai_powered': True,
+                            'model_used': result['model_used'],
+                            'settings_used': {
+                                'platform': platform,
+                                'post_type': post_type,
+                                'tone': tone,
+                                'length': settings.get('length', 'medium')
+                            }
+                        },
+                        'timestamp': datetime.utcnow().isoformat()
+                    })
+                else:
+                    logging.warning("⚠️ Gemini failed for social, using fallback templates")
+                    
+            except Exception as e:
+                logging.error(f"❌ Gemini error for social: {str(e)}")
         
-        # Generate post
-        post_content = generate_post(topic, platform, post_type, tone, settings)
+        # Fallback to mock templates
+        logging.info(f"📝 Using mock templates for social media generation - {platform}")
+        time.sleep(random.uniform(1, 2))  # Simulate processing
+        
+        post_content = generate_mock_post(topic, platform, post_type, tone, settings)
         
         return jsonify({
             'success': True,
@@ -95,6 +138,9 @@ def generate_social_post():
                 'content': post_content,
                 'character_count': len(post_content),
                 'platform': platform,
+                'hashtags_included': '#' in post_content,
+                'ai_powered': False,
+                'model_used': 'mock-template',
                 'settings_used': {
                     'platform': platform,
                     'post_type': post_type,
@@ -106,14 +152,15 @@ def generate_social_post():
         })
         
     except Exception as e:
+        logging.error(f"❌ Social media generation error: {str(e)}")
         return jsonify({
             'error': 'Internal server error',
             'message': str(e),
             'timestamp': datetime.utcnow().isoformat()
         }), 500
 
-def generate_post(topic, platform, post_type, tone, settings):
-    """Generate social media post using templates"""
+def generate_mock_post(topic, platform, post_type, tone, settings):
+    """Generate social media post using mock templates (fallback)"""
     
     # Get template
     platform_templates = SOCIAL_TEMPLATES.get(platform, SOCIAL_TEMPLATES['facebook'])
@@ -179,6 +226,23 @@ def generate_post(topic, platform, post_type, tone, settings):
 @social_bp.route('/platforms', methods=['GET'])
 def get_platforms():
     """Get available social media platforms and their configurations"""
+    ai_status = {
+        'available': GEMINI_AVAILABLE,
+        'model': 'gemini-1.5-flash' if GEMINI_AVAILABLE else None,
+        'api_key_set': bool(os.getenv('GEMINI_API_KEY') and os.getenv('GEMINI_API_KEY') != 'your_gemini_api_key_here')
+    }
+    
+    # Test connection if available
+    if GEMINI_AVAILABLE and ai_status['api_key_set']:
+        try:
+            gemini_service = get_gemini_service()
+            connection_test = gemini_service.test_connection()
+            ai_status['connected'] = connection_test['connected']
+        except Exception:
+            ai_status['connected'] = False
+    else:
+        ai_status['connected'] = False
+    
     return jsonify({
         'success': True,
         'data': {
@@ -210,10 +274,18 @@ def get_platforms():
                     'character_limit': 3000,
                     'supports_hashtags': True,
                     'supports_emojis': False
+                },
+                {
+                    'id': 'tiktok',
+                    'name': 'TikTok',
+                    'character_limit': 2200,
+                    'supports_hashtags': True,
+                    'supports_emojis': True
                 }
             ],
             'post_types': ['promotional', 'educational', 'engagement', 'storytelling', 'announcement'],
-            'tones': ['friendly', 'professional', 'casual', 'enthusiastic', 'inspiring', 'humorous', 'urgent']
+            'tones': ['friendly', 'professional', 'casual', 'enthusiastic', 'inspiring', 'humorous', 'urgent'],
+            'ai_status': ai_status
         },
         'timestamp': datetime.utcnow().isoformat()
     })
@@ -227,6 +299,7 @@ def validate_social_input():
         platform = data.get('platform', 'facebook')
         
         errors = []
+        warnings = []
         
         if not topic:
             errors.append("Topic is required")
@@ -238,16 +311,22 @@ def validate_social_input():
             'twitter': 280,
             'instagram': 2200,
             'facebook': 63206,
-            'linkedin': 3000
+            'linkedin': 3000,
+            'tiktok': 2200
         }
         
         limit = platform_limits.get(platform, 280)
         if len(topic) > limit // 2:  # Reserve space for template text
             errors.append(f"Topic too long for {platform} (max ~{limit//2} characters)")
         
+        # Check AI availability
+        if not GEMINI_AVAILABLE or not os.getenv('GEMINI_API_KEY') or os.getenv('GEMINI_API_KEY') == 'your_gemini_api_key_here':
+            warnings.append("AI service not configured. Using mock templates.")
+        
         return jsonify({
             'valid': len(errors) == 0,
             'errors': errors,
+            'warnings': warnings,
             'platform_limit': limit,
             'timestamp': datetime.utcnow().isoformat()
         })
@@ -256,5 +335,6 @@ def validate_social_input():
         return jsonify({
             'valid': False,
             'errors': ['Invalid input format'],
+            'warnings': [],
             'timestamp': datetime.utcnow().isoformat()
         }), 400

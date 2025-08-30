@@ -38,15 +38,22 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <button class="p-2 rounded-lg hover:bg-gray-100 relative">
-                        <i class="ri-notification-line text-xl text-gray-600"></i>
-                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                    </button>
-                    <div class="flex items-center space-x-2">
+                    <!-- User Section - Hidden when not logged in -->
+                    <div id="userSection" class="flex items-center space-x-2 hidden">
                         <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                             <i class="ri-user-line text-white"></i>
                         </div>
-                        <span class="text-sm font-medium text-gray-700">User</span>
+                        <span class="text-sm font-medium text-gray-700" id="userName">User</span>
+                        <button onclick="logout()" class="ml-2 text-gray-500 hover:text-gray-700 transition">
+                            <i class="ri-logout-box-line"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Login Button - Shown when not logged in -->
+                    <div id="loginSection">
+                        <button onclick="goToAuth()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition font-medium">
+                            Login
+                        </button>
                     </div>
                 </div>
             </div>
@@ -143,7 +150,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="text-center">
                         <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="ri-lightning-line text-2xl text-white"></i>
+                            <i class="ri-flashlight-line text-2xl text-white"></i>
                         </div>
                         <h4 class="text-xl font-semibold text-gray-900 mb-3">Lightning Fast</h4>
                         <p class="text-gray-600">Generate high-quality content in seconds, not hours.</p>
@@ -271,5 +278,6 @@
     </footer>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/models.js"></script>
 </body>
 </html>

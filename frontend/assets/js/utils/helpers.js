@@ -4,7 +4,7 @@
 // API Configuration
 const API_CONFIG = {
     baseURL: 'http://localhost:5000/api/v1',
-    timeout: 30000, // 30 seconds
+    timeout: 60000, // 60 seconds for AI processing
     headers: {
         'Content-Type': 'application/json',
     }
@@ -68,6 +68,11 @@ class APIHelper {
         return await this.makeRequest('/product/validate', 'POST', {
             product_info: productInfo
         });
+    }
+
+    // Get AI service status
+    async getAIStatus() {
+        return await this.makeRequest('/product/ai-status');
     }
 
     // Social Media API calls

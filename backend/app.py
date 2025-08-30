@@ -49,12 +49,14 @@ def register_blueprints(app):
     from api.routes.social import social_bp
     from api.routes.blog import blog_bp
     from api.routes.marketing import marketing_bp
+    from api.routes.models import models_bp
     
     # Register API routes
     app.register_blueprint(product_bp, url_prefix=f"{app.config['API_PREFIX']}/product")
     app.register_blueprint(social_bp, url_prefix=f"{app.config['API_PREFIX']}/social")
     app.register_blueprint(blog_bp, url_prefix=f"{app.config['API_PREFIX']}/blog")
     app.register_blueprint(marketing_bp, url_prefix=f"{app.config['API_PREFIX']}/marketing")
+    app.register_blueprint(models_bp, url_prefix=f"{app.config['API_PREFIX']}/models")
 
 def register_error_handlers(app):
     """Register error handlers"""
